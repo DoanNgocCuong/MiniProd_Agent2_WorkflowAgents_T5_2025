@@ -1,0 +1,12 @@
+[submodule "personalized-ai-coach"]
+	path = personalized-ai-coach
+	url = git@gitlab.com:platform-rag/personalized-ai-coach.git
+[submodule "robot-ai-lesson"]
+	path = robot-ai-lesson
+	url = git@gitlab.com:platform-rag/robot-ai-lesson.git
+[submodule "robot-ai-tool"]
+	path = robot-ai-tool
+	url = git@gitlab.com:platform-rag/robot-ai-tool.git
+[submodule "robot-ai-workflow"]
+	path = robot-ai-workflow
+	url = git@gitlab.com:platform-rag/robot-ai-workflow.git
