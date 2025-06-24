@@ -3,13 +3,19 @@ git clone git@gitlab.com:platform-rag/robot-ai-lesson.git
 git clone git@gitlab.com:platform-rag/robot-ai-tool.git
 git clone git@gitlab.com:platform-rag/robot-ai-workflow.git
 
+git rm -rf personalized-ai-coach
+git rm -rf robot-ai-lesson
+git rm -rf robot-ai-tool
+git rm -rf robot-ai-workflow
 
 git submodule add git@gitlab.com:platform-rag/personalized-ai-coach.git
 git submodule add git@gitlab.com:platform-rag/robot-ai-lesson.git
 git submodule add git@gitlab.com:platform-rag/robot-ai-tool.git
 git submodule add git@gitlab.com:platform-rag/robot-ai-workflow.git
 
-
+git add .
+git commit -m "Update submodule pointer for robot-ai-tool"
+git push 
 
 
 ## **2. Khi bạn chỉ sửa code ở repo cha**
@@ -22,6 +28,8 @@ git add <file>
 git commit -m "Update README in parent repo"
 git push
 ```
+
+Lệnh này thậm chí còn push cả 4 sub repo into github. 
 
 
 Giả sử bạn sửa file trong `robot-ai-tool` (submodule):
