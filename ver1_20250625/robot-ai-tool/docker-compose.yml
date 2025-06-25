@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  robot-ai-tool:
+    image: robot-ai-tool:v1.0.3
+    container_name: robot-ai-tool-server-master
+    env_file:
+      - .env
+    network_mode: "host"
+    restart: always
+  
+  redis:
+    image: redis:7.2.4
+    container_name: robot-ai-tool-redis-master
+    command: >
+      redis-server --port ${REDIS_PORT} --requirepass ${REDIS_PASSWORD} --maxmemory 12024mb --maxmemory-policy allkeys-lru
+    env_file:
+      - .env
+    # networks:
+    #   - robot-ai-workflow-network-master
+    restart: always
+    network_mode: host
+      
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: robot-ai-tool-rabbitmq-master
+    command: rabbitmq-server
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    # networks:
+    #   - robot-ai-workflow-network-master
+    network_mode: host
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "2"          # Giới hạn CPU là 50% của 1 core
+          memory: "512M"       # Giới hạn bộ nhớ là 512MB
+        reservations:
+          cpus: "1"         # Đặt mức tối thiểu là 25% của 1 core
+          memory: "256M"       # Đặt mức tối thiểu là 256MB
+  
+  robot-ai-tool-worker:
+    image: robot-ai-tool-worker:v1.0.3
+    env_file:
+      - .env
+    deploy:
+      replicas: 10
+    network_mode: host
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started

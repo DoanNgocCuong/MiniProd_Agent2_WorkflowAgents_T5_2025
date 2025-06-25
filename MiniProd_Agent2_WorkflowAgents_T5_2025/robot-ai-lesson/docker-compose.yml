@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  robot-ai-lesson:
+    image: robot-ai-lesson:v1.0.3
+    container_name: robot-ai-lesson-server-master
+    env_file:
+      - .env
+    ports:
+      - "${SERVER_PORT}:${PORT}"
+    networks:
+      - robot-ai-workflow-network-master
+    restart: always
+    # depends_on:
+    #   mysql:
+    #     condition: service_started
+
+  redis:
+    image: redis:7.2.4
+    container_name: robot-ai-lesson-redis-master
+    command: >
+      redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 12024mb --maxmemory-policy allkeys-lru
+    env_file:
+      - .env
+    networks:
+      - robot-ai-workflow-network-master
+    restart: always
+
+  # mysql:
+  #   image: mysql:9.0.1
+  #   container_name: robot-ai-lesson-mysql-master
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  #     - TZ=${TIMEZONE}
+  #   command:
+  #     --max_connections=1000
+  #     --character-set-server=utf8mb4
+  #     --collation-server=utf8mb4_vietnamese_ci
+  #     --tls_version="TLSv1.2,TLSv1.3"
+  #     --init-file /data/application/init.sql
+  #     --gtid-mode=OFF
+  #     --innodb_use_native_aio=0
+  #   volumes:
+  #     - ./database/mysql:/var/lib/mysql
+  #     - ./database/init.sql:/data/application/init.sql
+  #   networks:
+  #     - robot-ai-workflow-network-master
+  #   ports:
+  #     - "13310:3306"
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin" ,"ping", "-uroot", "-p${MYSQL_PASSWORD}"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 3
+  #   restart: always
+  #   ulimits: # Added to fix AIO initialization error
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536
+
+networks:
+  robot-ai-workflow-network-master:
+    external: true
+    driver: bridge

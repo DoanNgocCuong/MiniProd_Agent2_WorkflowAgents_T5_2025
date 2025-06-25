@@ -1,0 +1,43 @@
+Agent:
+  url: http://103.253.20.30:9400/personalized-ai-coach/api/v1/bot
+  headers: 
+    Content-Type: application/json
+  method: POST
+
+Workflow:
+  url: http://103.253.20.30:9403/robot-ai-workflow/api/v1/bot
+  headers: 
+    Content-Type: application/json
+  method: POST
+
+PROVIDER_MODELS:
+  groq:
+    openai_setting:
+      api_key: "GROQ_API_KEY"
+      base_url: "https://api.groq.com/openai/v1"
+    generation_params:
+      max_tokens: 1024
+      temperature: 0.0
+      top_p: 1
+      model: "Meta-Llama-3.1-70B-Instruct"
+      stream: False
+  openai: 
+    openai_setting:
+      api_key: "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"
+      base_url: "https://api.openai.com/v1"
+    generation_params:
+      max_tokens: 1024
+      temperature: 0.0
+      top_p: 1
+      model: "gpt-4o-mini"
+      stream: False
+  gemini:
+    openai_setting:
+      api_key: "GEMINI_API_KEY"
+      base_url: ""
+    generation_params:
+      max_tokens: 1024
+      temperature: 0.0
+      top_p: 1
+      model: "gemini-1.5-flash"
+      stream: False

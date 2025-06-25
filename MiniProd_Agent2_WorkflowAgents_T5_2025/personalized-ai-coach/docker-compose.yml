@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  personalized-ai-coach:
+    image: personalized-ai-coach:v1.0.10
+    container_name: personalized-ai-coach-server-master
+    env_file:
+      - .env
+    ports:
+      - "${SERVER_PORT}:${PORT}"
+    networks:
+      - robot-ai-workflow-network-master
+    restart: always
+    # depends_on:
+    #   mysql:
+    #     condition: service_started
+
+  redis:
+    image: redis:7.2.4
+    container_name: personalized-ai-coach-redis-master
+    command: >
+      redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 12024mb --maxmemory-policy allkeys-lru
+    env_file:
+      - .env
+    networks:
+      - robot-ai-workflow-network-master
+    restart: always
+
+  # mysql:
+  #   image: mysql:9.0.1
+  #   container_name: personalized-ai-coach-mysql-master
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  #     - TZ=${TIMEZONE}
+  #   command:
+  #     --max_connections=1000
+  #     --character-set-server=utf8mb4
+  #     --collation-server=utf8mb4_vietnamese_ci
+  #     --tls_version="TLSv1.2,TLSv1.3"
+  #     --init-file /data/application/init.sql
+  #     --gtid-mode=OFF  # Disable GTID if not needed
+  #   volumes:
+  #     - ./database/mysql:/var/lib/mysql
+  #     - ./database/init.sql:/data/application/init.sql
+  #   networks:
+  #     - robot-ai-workflow-network-master
+  #   ports:
+  #     - "13307:3306"
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin" ,"ping", "-uroot", "-p${MYSQL_PASSWORD}"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 3
+  #   restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: personalized-ai-coach-rabbitmq-master
+    command: rabbitmq-server
+    # ports:
+      # - "${RABBITMQ_PORT}:5672"   # RabbitMQ default port
+      # - "15672:15672" # Management UI port
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - robot-ai-workflow-network-master
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "2"          # Giới hạn CPU là 50% của 1 core
+          memory: "512M"       # Giới hạn bộ nhớ là 512MB
+        reservations:
+          cpus: "1"         # Đặt mức tối thiểu là 25% của 1 core
+          memory: "256M"       # Đặt mức tối thiểu là 256MB
+  
+  personalized-ai-coach-worker-master:
+    image: personalized-ai-coach-worker:v1.0.10
+    env_file:
+      - .env
+    networks:
+      - robot-ai-workflow-network-master
+    restart: always
+    deploy:
+      replicas: 10  # Số lượng bản sao
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+networks:
+  robot-ai-workflow-network-master:
+    external: true
+    driver: bridge

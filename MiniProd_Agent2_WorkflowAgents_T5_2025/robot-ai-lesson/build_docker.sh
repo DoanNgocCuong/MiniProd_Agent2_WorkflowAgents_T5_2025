@@ -1,0 +1,1 @@
+docker build -t robot-ai-lesson:v1.0.3 .
