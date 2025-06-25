@@ -23,7 +23,7 @@ PROVIDER_MODELS:
       stream: False
   openai: 
     openai_setting:
-      api_key: "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"
+      api_key:"OPENAI_API_KEY"
       base_url: "https://api.openai.com/v1"
     generation_params:
       max_tokens: 1024

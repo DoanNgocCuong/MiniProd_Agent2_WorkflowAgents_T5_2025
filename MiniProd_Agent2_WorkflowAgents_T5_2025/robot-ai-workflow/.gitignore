@@ -1,9 +1,0 @@
-**/.history
-*.pyc
-*.egg-info
-build/
-.idea/
-models/*
-database/*
-.env
-resources/*

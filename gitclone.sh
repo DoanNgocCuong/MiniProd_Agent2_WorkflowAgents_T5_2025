@@ -44,3 +44,9 @@ git add robot-ai-tool
 git commit -m "Update submodule pointer for robot-ai-tool"
 git push
 ```
+
+# Khi clone repo cha
+```bash
+git clone https://github.com/DoanNgocCuong/MiniProd_Agent2_WorkflowAgents_T5_2025
+git submodule update --init --recursive
+```
