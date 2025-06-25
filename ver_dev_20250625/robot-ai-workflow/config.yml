@@ -1,0 +1,31 @@
+PROVIDER_MODELS:
+  groq:
+    openai_setting:
+      api_key: "GROQ_API_KEY"
+      base_url: "https://api.groq.com/openai/v1"
+    generation_params:
+      max_tokens: 1024
+      temperature: 0.0
+      top_p: 1
+      model: "Meta-Llama-3.1-70B-Instruct"
+      stream: False
+  openai: 
+    openai_setting:
+      api_key: "OPENAI_API_KEY"
+      base_url: "https://api.openai.com/v1"
+    generation_params:
+      max_tokens: 1024
+      temperature: 0.0
+      top_p: 1
+      model: "gpt-4o-mini"
+      stream: False
+  gemini:
+    openai_setting:
+      api_key: "GEMINI_API_KEY"
+      base_url: ""
+    generation_params:
+      max_tokens: 1024
+      temperature: 0.0
+      top_p: 1
+      model: "gemini-1.5-flash"
+      stream: False
