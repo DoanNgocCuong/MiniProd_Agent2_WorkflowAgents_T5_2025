@@ -1,0 +1,114 @@
+version: '3'
+services:
+  mem0-service-hoailb:
+    image: mem0-service-hoailb:0.3
+    container_name: Mem0Service-hoailb
+    restart: always
+    ports:
+      - 6699:8000
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./:/app/
+    depends_on:
+      - mem0-redis
+      - mem0-rabbitmq
+    networks:
+      - milvus
+
+  mem0-redis:
+    image: redis:latest
+    container_name: mem0-redis
+    restart: always
+    networks:
+      - milvus
+
+  mem0-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: mem0-rabbitmq
+    restart: always
+    ports:
+      - "16672:15672" # Management UI port
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - milvus
+
+  celery-worker-extract_fact:
+    image: mem0-service-hoailb:0.3
+    restart: always
+    command: celery -A src.celery worker --loglevel=info -Q mem0_queue_extract_fact --concurrency=24 --heartbeat-interval=30
+    volumes:
+      - ./:/app/
+    depends_on:
+      - mem0-redis
+      - mem0-rabbitmq
+    networks:
+      - milvus
+
+  celery-worker-retrieval:
+    image: mem0-service-hoailb:0.3
+    restart: always
+    command: celery -A src.celery worker --loglevel=info -Q mem0_retrieval_queue --concurrency=5 --heartbeat-interval=30
+    volumes:
+      - ./:/app/
+    depends_on:
+      - mem0-redis
+      - mem0-rabbitmq
+    networks:
+      - milvus
+
+  celery-worker-generate-response:
+    image: mem0-service-hoailb:0.3
+    restart: always
+    command: celery -A src.celery worker --loglevel=info -Q mem0_generate_response_queue --concurrency=20 --heartbeat-interval=30
+    volumes:
+      - ./:/app/
+    depends_on:
+      - mem0-redis
+      - mem0-rabbitmq
+    networks:
+      - milvus
+
+  celery-worker-test-extract-fact:
+    image: mem0-service-hoailb:0.3
+    restart: always
+    command: celery -A src.celery worker --loglevel=info -Q mem0_queue_extract_fact_test --concurrency=20 --heartbeat-interval=30
+    volumes:
+      - ./:/app/
+    depends_on:
+      - mem0-redis
+      - mem0-rabbitmq
+    networks:
+      - milvus
+
+  celery-worker-test-check-facts:
+    image: mem0-service-hoailb:0.3
+    restart: always
+    command: celery -A src.celery worker --loglevel=info -Q mem0_queue_check_facts_test --concurrency=20 --heartbeat-interval=30
+    volumes:
+      - ./:/app/
+    depends_on:
+      - mem0-redis
+      - mem0-rabbitmq
+    networks:
+      - milvus
+
+  flower-hoailb:
+    image: mem0-service-hoailb:0.3
+    ports:
+      - 5555:5555
+    command: celery -A src.celery flower --broker_api=http://guest:guest@mem0-rabbitmq:15672/api/ --port=5555
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@mem0-rabbitmq:5672/
+      - CELERY_RESULT_BACKEND=redis://mem0-redis:6379/0
+    depends_on:
+      - mem0-redis
+      - mem0-rabbitmq
+    networks:
+      - milvus
+    volumes:
+      - ./:/app/
+networks:
+  milvus:
+    external: true

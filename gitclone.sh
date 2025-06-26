@@ -12,6 +12,7 @@ git submodule add git@gitlab.com:platform-rag/personalized-ai-coach.git
 git submodule add git@gitlab.com:platform-rag/robot-ai-lesson.git
 git submodule add git@gitlab.com:platform-rag/robot-ai-tool.git
 git submodule add git@gitlab.com:platform-rag/robot-ai-workflow.git
+git submodule add https://gitlab.com/platform-rag/pika-mem0.git
 
 git add .
 git commit -m "Update submodule pointer for robot-ai-tool"

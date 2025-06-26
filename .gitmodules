@@ -10,3 +10,6 @@
 [submodule "robot-ai-workflow"]
 	path = robot-ai-workflow
 	url = git@gitlab.com:platform-rag/robot-ai-workflow.git
+[submodule "pika-mem0"]
+	path = pika-mem0
+	url = https://gitlab.com/platform-rag/pika-mem0.git
