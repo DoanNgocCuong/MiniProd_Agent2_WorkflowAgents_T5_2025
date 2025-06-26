@@ -5,7 +5,7 @@ COPY requirement.txt /opt/
 RUN python -m pip install -r requirement.txt
 RUN python -m pip install google-generativeai
 
-EXPOSE 9403
+EXPOSE 30000
 
 COPY src /opt/src
 COPY app.py config.yml /opt/
