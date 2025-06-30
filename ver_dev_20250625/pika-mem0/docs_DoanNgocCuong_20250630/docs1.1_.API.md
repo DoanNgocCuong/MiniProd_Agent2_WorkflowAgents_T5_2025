@@ -15,6 +15,13 @@ curl -X GET "http://localhost:6699/health" \
   -H "accept: application/json"
 ```
 
+**Output Example:**
+```json
+{
+  "status": "healthy"
+}
+```
+
 ## 2. Production Endpoints
 
 ### POST /extract_facts
@@ -45,6 +52,60 @@ curl -X POST "http://localhost:6699/extract_facts" \
   }'
 ```
 
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "time_response": 2.45,
+  "facts": [
+    {
+      "id": "fact_001",
+      "source": "conversation",
+      "user_id": "user123",
+      "conversation_id": "conv456",
+      "fact_type": "entity",
+      "fact_value": "Tên người dùng là Nguyễn Văn A",
+      "metadata": {},
+      "operation": "ADD",
+      "score": 0
+    },
+    {
+      "id": "fact_002", 
+      "source": "conversation",
+      "user_id": "user123",
+      "conversation_id": "conv456",
+      "fact_type": "attribute",
+      "fact_value": "25 tuổi",
+      "metadata": {},
+      "operation": "ADD",
+      "score": 0
+    },
+    {
+      "id": "fact_003",
+      "source": "conversation", 
+      "user_id": "user123",
+      "conversation_id": "conv456",
+      "fact_type": "relation",
+      "fact_value": "Làm việc tại công ty ABC",
+      "metadata": {},
+      "operation": "ADD",
+      "score": 0
+    },
+    {
+      "id": "fact_004",
+      "source": "conversation",
+      "user_id": "user123", 
+      "conversation_id": "conv456",
+      "fact_type": "attribute",
+      "fact_value": "Thích ăn pizza và xem phim hành động",
+      "metadata": {},
+      "operation": "ADD",
+      "score": 0
+    }
+  ]
+}
+```
+
 ### POST /search_facts
 Tìm kiếm thông tin dựa trên query
 
@@ -58,6 +119,55 @@ curl -X POST "http://localhost:6699/search_facts" \
     "conversation_id": "conv456",
     "limit": 5
   }'
+```
+
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "time_response": 1.23,
+  "facts": [
+    {
+      "id": "fact_001",
+      "source": "conversation",
+      "user_id": "user123",
+      "conversation_id": "conv456",
+      "fact_type": "entity",
+      "fact_value": "Tên người dùng là Nguyễn Văn A",
+      "score": 0.95,
+      "metadata": {
+        "created_at": "2025-06-20T10:30:00Z",
+        "updated_at": "2025-06-20T10:30:00Z"
+      }
+    },
+    {
+      "id": "fact_002",
+      "source": "conversation", 
+      "user_id": "user123",
+      "conversation_id": "conv456",
+      "fact_type": "attribute",
+      "fact_value": "25 tuổi",
+      "score": 0.87,
+      "metadata": {
+        "created_at": "2025-06-20T10:30:00Z",
+        "updated_at": "2025-06-20T10:30:00Z"
+      }
+    },
+    {
+      "id": "fact_003",
+      "source": "conversation",
+      "user_id": "user123", 
+      "conversation_id": "conv456",
+      "fact_type": "relation",
+      "fact_value": "Làm việc tại công ty ABC",
+      "score": 0.82,
+      "metadata": {
+        "created_at": "2025-06-20T10:30:00Z",
+        "updated_at": "2025-06-20T10:30:00Z"
+      }
+    }
+  ]
+}
 ```
 
 ### POST /generate_response
@@ -78,6 +188,24 @@ curl -X POST "http://localhost:6699/generate_response" \
     "conversation_id": "conv456",
     "mode": "milvus_only"
   }'
+```
+
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "time_response": 3.12,
+  "response": {
+    "content": "Có, tôi nhớ bạn thích ăn pizza và xem phim hành động. Đây là những sở thích mà bạn đã chia sẻ với tôi trước đó.",
+    "context_used": [
+      {
+        "fact": "Thích ăn pizza và xem phim hành động",
+        "relevance_score": 0.92
+      }
+    ],
+    "memory_retrieved": 1
+  }
+}
 ```
 
 ## 3. Test Endpoints
@@ -106,6 +234,19 @@ curl -X POST "http://localhost:6699/test/test_extract_facts" \
   }'
 ```
 
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "time_response": 1.87,
+  "facts": [
+    "Người dùng là lập trình viên Python",
+    "Thích uống cà phê vào buổi sáng",
+    "Có kiến thức về ngôn ngữ lập trình Python"
+  ]
+}
+```
+
 ### POST /test/test_check_facts
 Kiểm tra thông tin với prompt tùy chỉnh
 
@@ -126,6 +267,38 @@ curl -X POST "http://localhost:6699/test/test_check_facts" \
   }'
 ```
 
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "time_response": 2.34,
+  "results": {
+    "memory": [
+      {
+        "id": "1",
+        "text": "Người dùng tên Nguyễn Văn A",
+        "event": "ADD"
+      },
+      {
+        "id": "2", 
+        "text": "25 tuổi",
+        "event": "ADD"
+      },
+      {
+        "id": "3",
+        "text": "Làm việc tại công ty ABC",
+        "event": "ADD"
+      },
+      {
+        "id": "4",
+        "text": "Thích ăn pizza",
+        "event": "ADD"
+      }
+    ]
+  }
+}
+```
+
 ### POST /test/test_check_facts (với raw_facts dạng string)
 ```bash
 curl -X POST "http://localhost:6699/test/test_check_facts" \
@@ -137,6 +310,38 @@ curl -X POST "http://localhost:6699/test/test_check_facts" \
   }'
 ```
 
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "time_response": 1.98,
+  "results": {
+    "memory": [
+      {
+        "id": "1",
+        "text": "Người dùng tên John",
+        "event": "ADD"
+      },
+      {
+        "id": "2",
+        "text": "30 tuổi",
+        "event": "ADD"
+      },
+      {
+        "id": "3", 
+        "text": "Sống ở Hà Nội",
+        "event": "ADD"
+      },
+      {
+        "id": "4",
+        "text": "Thích đọc sách",
+        "event": "ADD"
+      }
+    ]
+  }
+}
+```
+
 ### GET /test/default_checking_prompt
 Lấy prompt mặc định cho việc kiểm tra thông tin
 
@@ -145,12 +350,53 @@ curl -X GET "http://localhost:6699/test/default_checking_prompt" \
   -H "accept: application/json"
 ```
 
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "prompt": "You are a smart memory manager which controls the memory of a system.\n\nYou can perform four operations: (1) add into the memory, (2) update the memory, (3) delete from the memory, and (4) no change.\n\nBased on the above four operations, the memory will change.\n\nCompare newly retrieved facts with the existing memory. For each new fact, decide whether to:\n\n- ADD: Add it to the memory as a new element\n- UPDATE: Update an existing memory element\n- DELETE: Delete an existing memory element\n- NONE: Make no change (if the fact is already present or irrelevant)\n\n[...full prompt text...]"
+}
+```
+
 ### GET /test/get_facts
 Lấy tất cả thông tin của một user
 
 ```bash
 curl -X GET "http://localhost:6699/test/get_facts?user_id=user123&limit=100" \
   -H "accept: application/json"
+```
+
+**Output Example:**
+```json
+{
+  "status": "ok",
+  "facts": [
+    {
+      "id": "fact_001",
+      "user_id": "user123",
+      "fact": "Tên người dùng là Nguyễn Văn A",
+      "conversation_id": "conv456"
+    },
+    {
+      "id": "fact_002",
+      "user_id": "user123", 
+      "fact": "25 tuổi",
+      "conversation_id": "conv456"
+    },
+    {
+      "id": "fact_003",
+      "user_id": "user123",
+      "fact": "Làm việc tại công ty ABC",
+      "conversation_id": "conv456"
+    },
+    {
+      "id": "fact_004",
+      "user_id": "user123",
+      "fact": "Thích ăn pizza và xem phim hành động",
+      "conversation_id": "conv456"
+    }
+  ]
+}
 ```
 
 ## 4. Advanced Test Cases
@@ -327,32 +573,42 @@ export TEST_USER_ID="prod_test_user"
 export TEST_CONV_ID="prod_test_conv"
 ```
 
-## 9. Response Examples
+## 9. Error Response Examples
 
-### Successful Extract Facts Response
+### Timeout Error
 ```json
 {
-  "status": "ok",
-  "time_response": 2.34,
-  "facts": [
+  "detail": "Fact extraction is taking longer than expected. Please try again later."
+}
+```
+
+### Validation Error
+```json
+{
+  "detail": [
     {
-      "id": "fact_123",
-      "source": "conversation",
-      "user_id": "user123",
-      "conversation_id": "conv456", 
-      "fact_type": "entity",
-      "fact_value": "Tên người dùng là Nguyễn Văn A",
-      "metadata": {},
-      "score": 0.95
+      "type": "missing",
+      "loc": ["body", "user_id"],
+      "msg": "Field required",
+      "input": {}
     }
   ]
 }
 ```
 
-### Error Response Example
+### Server Error
 ```json
 {
-  "detail": "Fact extraction is taking longer than expected. Please try again later."
+  "detail": "Internal server error occurred during fact extraction"
+}
+```
+
+### Empty Results
+```json
+{
+  "status": "ok",
+  "time_response": 0.45,
+  "facts": []
 }
 ```
 
@@ -376,3 +632,8 @@ ab -n 1000 -c 10 http://localhost:6699/health
 # Test extract facts endpoint (cần tạo file data.json)
 ab -n 100 -c 5 -p data.json -T application/json http://localhost:6699/extract_facts
 ```
+
+
+
+
+
