@@ -47,6 +47,11 @@ git push
 ```
 
 # Khi clone repo cha
+Trên dev: file .gitmodules có đường dẫn. 
+# [submodule "pika-mem0"]
+# 	path = pika-mem0
+# 	url = https://gitlab.com/platform-rag/pika-mem0.git
+
 ```bash
 git clone https://github.com/DoanNgocCuong/MiniProd_Agent2_WorkflowAgents_T5_2025
 git submodule update --init --recursive

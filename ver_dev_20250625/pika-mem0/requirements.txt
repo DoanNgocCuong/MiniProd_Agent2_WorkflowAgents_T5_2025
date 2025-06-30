@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+pymilvus
+celery
+redis
+flower
+requests
+python-multipart
+typing-extensions
+litellm
+scikit-learn
